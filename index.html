@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uri-Lex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(135deg, #000, #111);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Splash Screen */
+    #splash {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      font-weight: 700;
+      background: #000;
+      transition: opacity 1s ease;
+      z-index: 999;
+    }
+    #splash.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #splash span {
+      display: inline-block;
+      animation: slideIn 1.5s ease;
+    }
+    #splash .u {
+      color: black;
+      background: white;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-right: 5px;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Login Container */
+    #loginPage {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 90%;
+      max-width: 380px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    h1 {
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      background: #111;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    button {
+      background: #222;
+      border: 2px solid #fff;
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    #googleBtn {
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    #googleBtn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .toggle {
+      font-size: 0.9rem;
+      margin-top: 10px;
+      cursor: pointer;
+      color: #ccc;
+      text-align: center;
+    }
+    .toggle:hover {
+      color: #fff;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.6rem; }
+      #splash { font-size: 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splash">
+    <span class="u">U</span><span>ri-Lex</span>
+  </div>
+
+  <!-- Login Page -->
+  <div id="loginPage">
+    <h1>Welcome to Uri-Lex</h1>
+    <input type="email" id="email" placeholder="Email address" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <button id="signupBtn" style="display:none;">Sign Up</button>
+    <button id="googleBtn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Login with Google
+    </button>
+    <div class="toggle" id="toggleMode">Don’t have an account? Click Sign Up</div>
+  </div>
+
+  <!-- Splash Transition -->
+  <script>
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        document.getElementById("splash").classList.add("hide");
+        setTimeout(() => {
+          document.getElementById("splash").style.display = "none";
+          document.getElementById("loginPage").style.display = "flex";
+        }, 1000);
+      }, 2000);
+    });
+  </script>
+
+  <!-- Firebase Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAN7mFP_-0MqmRXwN212IMcCbqkuQ-SEQ",
+      authDomain: "urlix-d6ae1.firebaseapp.com",
+      projectId: "urlix-d6ae1",
+      storageBucket: "urlix-d6ae1.firebasestorage.app",
+      messagingSenderId: "247920035867",
+      appId: "1:247920035867:web:4a8936ec3dd963af2450be",
+      measurementId: "G-NCM288H05L"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const loginBtn = document.getElementById("loginBtn");
+    const signupBtn = document.getElementById("signupBtn");
+    const googleBtn = document.getElementById("googleBtn");
+    const toggleMode = document.getElementById("toggleMode");
+
+    let signupMode = false;
+
+    toggleMode.addEventListener("click", () => {
+      signupMode = !signupMode;
+      signupBtn.style.display = signupMode ? "block" : "none";
+      loginBtn.style.display = signupMode ? "none" : "block";
+      toggleMode.textContent = signupMode ? "Already have an account? Click Login" : "Don’t have an account? Click Sign Up";
+    });
+
+    loginBtn.addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        alert(`Welcome ${userCredential.user.email}`);
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    signupBtn.addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        alert(`Account created for ${userCredential.user.email}`);
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    googleBtn.addEventListener("click", async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        alert(`Logged in as ${result.user.displayName}`);
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+  </script>
+</body>
+</html>
