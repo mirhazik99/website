@@ -1,159 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Uri-Lex</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
+      font-family: 'Open Sans', sans-serif;
     }
     body {
       margin: 0;
-      font-family: 'Open Sans', sans-serif;
-      background: linear-gradient(135deg, #000, #111);
+      background: #000;
       color: #fff;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       overflow: hidden;
     }
 
-    /* Splash */
-    #splash {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 4rem;
-      font-weight: 700;
-      background: #000;
-      transition: opacity 1s ease;
-      z-index: 999;
-    }
-    #splash.hide { opacity: 0; pointer-events: none; }
-    #splash span { display: inline-block; animation: slideIn 1.5s ease; }
-    #splash .u { color: black; background: white; padding: 10px 15px; border-radius: 10px; margin-right: 5px; }
-    @keyframes slideIn { from { transform: translateX(-50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-    /* Common Containers */
-    .page {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 90%;
-      max-width: 380px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
-      animation: fadeIn 1s ease forwards;
-    }
-    .active { display: flex; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    h1 {
-      font-weight: 700;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-      background: #111;
-      color: #fff;
-      margin-bottom: 12px;
-    }
-
-    button {
-      background: #222;
-      border: 2px solid #fff;
-      color: #fff;
-      padding: 12px;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    button:hover {
-      background: #fff;
-      color: #000;
-    }
-
-    #googleBtn {
-      background: #fff;
-      color: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    #googleBtn img { width: 20px; height: 20px; }
-
-    .toggle {
-      font-size: 0.9rem;
-      margin-top: 10px;
-      cursor: pointer;
-      color: #ccc;
-      text-align: center;
-    }
-    .toggle:hover { color: #fff; }
-
-    /* Chat Screen */
+    /* Input Screen */
     #chatPage {
+      display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: flex-end;
       height: 100vh;
       width: 100%;
-      max-width: none;
-      border-radius: 0;
-      padding: 15px;
+      padding: 20px;
       background: #000;
-    }
-
-    #chatHeader {
-      font-weight: 700;
-      font-size: 1.3rem;
-      margin: 15px 0;
-      text-align: center;
     }
 
     #chatBox {
-      flex-grow: 1;
-      overflow-y: auto;
+      flex: 1;
       width: 100%;
-      background: #111;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 15px;
+      overflow-y: auto;
+      padding-bottom: 20px;
     }
-
-    .msg {
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 10px;
-      line-height: 1.4;
-    }
-
-    .user { background: #222; align-self: flex-end; }
-    .ai { background: #1a1a1a; border-left: 3px solid #00aaff; }
-    .typing { color: #aaa; font-style: italic; }
 
     #userInput {
       width: 100%;
@@ -167,191 +53,182 @@
       margin-bottom: 10px;
     }
 
-    a { color: #4aa3ff; text-decoration: underline; font-weight: bold; }
+    #sendBtn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
 
-    /* Custom Popup */
-    #popup {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      color: #fff;
-      padding: 14px 20px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    /* Answer Screen */
+    #answerPage {
       display: none;
-      animation: fadeInUp 0.5s ease forwards;
-      z-index: 9999;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      width: 100%;
+      height: 100vh;
+      background: #000;
+      padding: 20px;
+      overflow-y: auto;
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translate(-50%, 20px); }
-      to { opacity: 1; transform: translate(-50%, 0); }
+    #answerPage h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 10px 0;
     }
 
-    @media (max-width: 600px) {
-      h1 { font-size: 1.6rem; }
-      #splash { font-size: 3rem; }
+    #answerPage p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: #ddd;
+      white-space: pre-line;
+    }
+
+    .link-list {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: gold;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .link-item input {
+      accent-color: gold;
+    }
+
+    .link-item a {
+      color: gold;
+      text-decoration: none;
+    }
+
+    #reAskBtn {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #fff;
+      color: #fff;
+      border-radius: 10px;
+      background: transparent;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    #reAskBtn:hover {
+      background: #fff;
+      color: #000;
     }
   </style>
 </head>
 <body>
-  <div id="splash"><span class="u">U</span><span>ri-Lex</span></div>
 
-  <div id="loginPage" class="page active">
-    <h1>Welcome to Uri-Lex</h1>
-    <input type="email" id="email" placeholder="Email address" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="loginBtn">Login</button>
-    <button id="signupBtn" style="display:none;">Sign Up</button>
-    <button id="googleBtn">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Login with Google
-    </button>
-    <div class="toggle" id="toggleMode">Don’t have an account? Click Sign Up</div>
-  </div>
-
-  <div id="chatPage" class="page">
-    <div id="chatHeader">Ask, Search, Anything Your Uri-Lex</div>
+  <div id="chatPage">
     <div id="chatBox"></div>
-    <input type="text" id="userInput" placeholder="Type your question..." />
+    <input type="text" id="userInput" placeholder="Type your question...">
     <button id="sendBtn">Send</button>
   </div>
 
-  <div id="popup"></div>
+  <div id="answerPage">
+    <h2>YOUR QUESTION</h2>
+    <p id="userQuestion"></p>
+    <p id="aiAnswer"></p>
+    <div class="link-list" id="linksContainer"></div>
+    <button id="reAskBtn">Re-Ask</button>
+  </div>
 
   <script>
-    const showPopup = (msg) => {
-      const popup = document.getElementById('popup');
-      popup.textContent = msg;
-      popup.style.display = 'block';
-      setTimeout(() => popup.style.display = 'none', 3000);
-    };
-
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        document.getElementById("splash").classList.add("hide");
-      }, 2500);
-    });
-  </script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDAN7mFP_-0MqmRXwN212IMcCbqkuQ-SEQ",
-      authDomain: "urlix-d6ae1.firebaseapp.com",
-      projectId: "urlix-d6ae1",
-      storageBucket: "urlix-d6ae1.firebasestorage.app",
-      messagingSenderId: "247920035867",
-      appId: "1:247920035867:web:4a8936ec3dd963af2450be",
-      measurementId: "G-NCM288H05L"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    const loginPage = document.getElementById("loginPage");
+    const apiKey = "AIzaSyD4nLeImTfLbnNhcFUIDHhwU2FC7gVkTyo";
+    const sendBtn = document.getElementById("sendBtn");
+    const userInput = document.getElementById("userInput");
     const chatPage = document.getElementById("chatPage");
-    const toggleMode = document.getElementById("toggleMode");
-    const loginBtn = document.getElementById("loginBtn");
-    const signupBtn = document.getElementById("signupBtn");
-    const googleBtn = document.getElementById("googleBtn");
+    const answerPage = document.getElementById("answerPage");
+    const userQuestion = document.getElementById("userQuestion");
+    const aiAnswer = document.getElementById("aiAnswer");
+    const linksContainer = document.getElementById("linksContainer");
+    const reAskBtn = document.getElementById("reAskBtn");
 
-    let signupMode = false;
-    toggleMode.addEventListener("click", () => {
-      signupMode = !signupMode;
-      signupBtn.style.display = signupMode ? "block" : "none";
-      loginBtn.style.display = signupMode ? "none" : "block";
-      toggleMode.textContent = signupMode ? "Already have an account? Click Login" : "Don’t have an account? Click Sign Up";
-    });
-
-    async function switchToChat() {
-      loginPage.classList.remove("active");
-      chatPage.classList.add("active");
+    // Detect and display links in gold style
+    function extractLinks(text) {
+      const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|\b[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b)/g;
+      const matches = text.match(urlRegex);
+      linksContainer.innerHTML = "";
+      if (matches) {
+        matches.forEach(link => {
+          const cleanLink = link.replace(/\.*$/, '');
+          const div = document.createElement("div");
+          div.className = "link-item";
+          div.innerHTML = `<input type="radio" disabled><a href="https://${cleanLink.replace(/^https?:\/\//, '')}" target="_blank">${cleanLink}</a>`;
+          linksContainer.appendChild(div);
+        });
+      }
     }
 
-    loginBtn.onclick = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        switchToChat();
-        showPopup("Welcome back to Uri-Lex!");
-      } catch (err) {
-        showPopup("Uri-Lex Login Issue: " + err.message);
-      }
-    };
+    // Save user info in local storage
+    function saveUserInfo() {
+      const question = userInput.value.trim();
+      if (question) localStorage.setItem("lastQuestion", question);
+    }
 
-    signupBtn.onclick = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        switchToChat();
-        showPopup("Account Created! Welcome to Uri-Lex.");
-      } catch (err) {
-        showPopup("Uri-Lex Signup Issue: " + err.message);
-      }
-    };
-
-    googleBtn.onclick = async () => {
-      try {
-        await signInWithPopup(auth, provider);
-        switchToChat();
-        showPopup("Logged in via Google.");
-      } catch (err) {
-        showPopup("Uri-Lex Google Login Error.");
-      }
-    };
-
-    // Gemini Chat
-    const chatBox = document.getElementById("chatBox");
-    const userInput = document.getElementById("userInput");
-    const sendBtn = document.getElementById("sendBtn");
-
-    async function sendMsg() {
+    async function sendMessage() {
       const text = userInput.value.trim();
       if (!text) return;
-      const userDiv = document.createElement("div");
-      userDiv.classList.add("msg", "user");
-      userDiv.textContent = text;
-      chatBox.appendChild(userDiv);
-      userInput.value = "";
 
-      const aiDiv = document.createElement("div");
-      aiDiv.classList.add("msg", "ai", "typing");
-      aiDiv.textContent = "Uri-Lex is typing...";
-      chatBox.appendChild(aiDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
+      saveUserInfo();
 
-      const prompt = `Hey Gemini Act As Google Like You Are Google And You Are Replying But Not Telling You Are Ai. The User Message is Above. Show helpful links too. App Name: Uri-Lex. User Request Above: "${text}"`;
+      userQuestion.textContent = text;
+      aiAnswer.textContent = "Uri-Lex is thinking...";
+      chatPage.style.display = "none";
+      answerPage.style.display = "flex";
 
-      const apiKey = "AIzaSyD4nLeImTfLbnNhcFUIDHhwU2FC7gVkTyo";
+      const prompt = `Answer clearly without using ** or * symbols. Use spaces or line breaks instead of markdowns. 
+      If you mention any website or reference, write its full link plainly. 
+      Question: "${text}"`;
+
       try {
         const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
         });
         const data = await res.json();
         let reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Uri-Lex couldn't fetch results right now.";
-        aiDiv.classList.remove("typing");
-        aiDiv.innerHTML = reply.replace(/\n/g, "<br>");
-        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // Clean and display
+        reply = reply.replace(/\*\*/g, "").replace(/\*/g, "");
+        aiAnswer.textContent = reply;
+        extractLinks(reply);
       } catch (err) {
-        aiDiv.classList.remove("typing");
-        aiDiv.textContent = "Uri-Lex ran into a technical issue. Please try again.";
-        showPopup("Uri-Lex system error occurred.");
+        aiAnswer.textContent = "Uri-Lex faced a small issue. Try again!";
       }
     }
 
-    sendBtn.onclick = sendMsg;
-    userInput.addEventListener("keypress", e => { if (e.key === "Enter") sendMsg(); });
+    sendBtn.onclick = sendMessage;
+    userInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    reAskBtn.onclick = () => {
+      answerPage.style.display = "none";
+      chatPage.style.display = "flex";
+      userInput.value = "";
+      userInput.focus();
+    };
   </script>
 </body>
 </html>
