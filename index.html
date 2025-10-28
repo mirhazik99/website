@@ -4,189 +4,220 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Uri-Lex</title>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Open Sans',sans-serif;
-  background:#000;color:#fff;
-  height:100vh;width:100vw;
-  overflow:hidden;display:flex;align-items:center;justify-content:center;
-}
-
-/* Splash */
-#splash{
-  position:fixed;inset:0;background:#000;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  font-size:3rem;font-weight:700;z-index:9999;
-  animation:fadeOut 2.6s ease forwards;
-}
-#splash span{animation:slide .8s ease}
-#splash .u{background:#fff;color:#000;padding:10px 15px;border-radius:12px;margin-right:8px;}
-@keyframes slide{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes fadeOut{0%,80%{opacity:1}100%{opacity:0;visibility:hidden}}
-
-/* Login + chat container */
-.page{display:none;flex-direction:column;align-items:center;justify-content:center;
-  width:90%;max-width:400px;background:#111;border-radius:16px;padding:25px;
-  box-shadow:0 0 20px rgba(255,255,255,0.05);animation:fadeIn .5s ease forwards}
-.active{display:flex}
-@keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-input,button{border:none;outline:none;border-radius:10px;font-size:1rem;width:100%;}
-input{background:#000;color:#fff;padding:14px;margin-bottom:12px;border:1px solid #333;}
-button{padding:12px;background:#00aaff;color:#fff;font-weight:600;}
-button:hover{background:#007acc;}
-.toggle{font-size:.9rem;margin-top:8px;color:#aaa;cursor:pointer;text-align:center}
-.toggle:hover{color:#fff}
-
-/* Chat Page */
-#chatPage{
-  display:none;flex-direction:column;
-  position:fixed;inset:0;
-  background:#000;
-  padding-top:60px; /* header space */
-}
-#chatHeader{
-  position:fixed;top:0;left:0;width:100%;
-  background:#000;padding:15px;font-weight:700;text-align:center;
-  border-bottom:1px solid #222;z-index:5;
-}
-#chatBox{
-  flex:1;overflow-y:auto;padding:15px;margin-bottom:70px; /* input bar space */
-}
-.msg{padding:10px 14px;margin:8px 0;border-radius:14px;max-width:85%;word-wrap:break-word;}
-.user{background:#222;margin-left:auto;}
-.ai{background:#111;border-left:3px solid #00aaff;}
-a{color:#4aa3ff;text-decoration:underline}
-
-/* Input bar with Send */
-#inputBar{
-  position:fixed;bottom:0;left:0;width:100%;
-  background:#111;padding:10px;
-  display:flex;align-items:center;gap:8px;
-  border-top:1px solid #222;
-}
-#userInput{
-  flex:1;padding:12px;background:#000;color:#fff;
-  border:1px solid #333;border-radius:20px;
-}
-#sendBtn{
-  background:#00aaff;color:#fff;
-  border:none;border-radius:50%;
-  width:45px;height:45px;font-size:1.2rem;font-weight:bold;
-  display:flex;align-items:center;justify-content:center;
-}
-#sendBtn:disabled{opacity:.4}
-#reaskBtn{margin:10px auto;background:#111;border:2px solid #fff;padding:8px 14px;border-radius:10px;display:none;}
-.typing{color:#aaa;font-style:italic}
-
-/* Ask history list */
-#history{
-  padding:10px;border-bottom:1px solid #111;overflow-x:auto;white-space:nowrap;
-}
-.histItem{
-  display:inline-block;background:#111;color:#fff;padding:6px 10px;border-radius:8px;
-  margin-right:5px;font-size:.85rem;cursor:pointer;
-}
-.histItem:hover{background:#222}
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(135deg,#000,#111);
+    color:white;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+  }
+  #splash{
+    position:fixed;inset:0;
+    display:flex;justify-content:center;align-items:center;
+    font-size:3rem;font-weight:700;
+    background:black;z-index:1000;
+    animation:fadeSplash 3s ease forwards;
+  }
+  #splash span.u{
+    background:white;color:black;padding:10px 14px;border-radius:10px;margin-right:8px;
+  }
+  @keyframes fadeSplash{
+    0%{opacity:1;}90%{opacity:1;}100%{opacity:0;visibility:hidden;}
+  }
+  #app{
+    display:none;
+    flex-direction:column;
+    width:100%;
+    height:100vh;
+    padding:20px;
+  }
+  #header{
+    font-weight:700;
+    font-size:1.2rem;
+    text-align:center;
+    margin-bottom:20px;
+  }
+  #askSection{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  #askBox{
+    position:relative;
+    width:100%;
+    max-width:600px;
+  }
+  #userInput{
+    width:100%;
+    background:#111;
+    color:white;
+    border:none;
+    border-radius:40px;
+    padding:14px 50px 14px 18px;
+    font-size:1rem;
+    outline:none;
+  }
+  #sendBtn{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    background:#0078ff;
+    border:none;
+    border-radius:50%;
+    width:40px;
+    height:40px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+  }
+  #sendBtn img{width:20px;height:20px;filter:invert(1);}
+  #chatArea{
+    display:none;
+    flex-direction:column;
+    height:100%;
+  }
+  #chatBox{
+    flex:1;
+    overflow-y:auto;
+    padding-bottom:10px;
+  }
+  .msg{margin:10px 0;padding:12px;border-radius:12px;line-height:1.5;}
+  .user{background:#1a1a1a;align-self:flex-end;}
+  .ai{background:#0b0b0b;border-left:3px solid #0078ff;}
+  a{color:#4aa3ff;font-weight:bold;text-decoration:underline;}
+  #reAskBtn{
+    background:#111;border:2px solid #0078ff;color:#fff;
+    padding:10px 16px;border-radius:30px;font-weight:600;
+    width:max-content;margin:15px auto;cursor:pointer;
+  }
+  #history{
+    display:flex;flex-direction:column;gap:10px;
+    max-height:50vh;overflow-y:auto;width:100%;
+  }
+  .historyItem{
+    background:#111;padding:10px 14px;border-radius:12px;
+    font-size:0.95rem;cursor:pointer;transition:0.3s;
+  }
+  .historyItem:hover{background:#1a1a1a;}
 </style>
 </head>
 <body>
+
 <div id="splash"><span class="u">U</span><span>ri-Lex</span></div>
 
-<div id="loginPage" class="page active">
-  <h2>Welcome to Uri-Lex</h2>
-  <input id="email" type="email" placeholder="Email" />
-  <input id="password" type="password" placeholder="Password" />
-  <button id="loginBtn">Login</button>
-  <button id="signupBtn" style="display:none;">Sign Up</button>
-  <div class="toggle" id="toggleMode">No account? Sign Up</div>
-</div>
+<div id="app">
+  <div id="header">Ask, Search, Anything — Your Uri-Lex</div>
 
-<div id="chatPage" class="page">
-  <div id="chatHeader">Uri-Lex</div>
   <div id="history"></div>
-  <div id="chatBox"></div>
 
-  <div id="inputBar">
-    <input type="text" id="userInput" placeholder="Type your question..." />
-    <button id="sendBtn">➤</button>
+  <div id="chatArea">
+    <div id="chatBox"></div>
+    <div id="reAskBtn" onclick="resetToAsk()">Re-Ask</div>
   </div>
-  <button id="reaskBtn">Re-Ask</button>
+
+  <div id="askSection">
+    <div id="askBox">
+      <input type="text" id="userInput" placeholder="Ask something..." />
+      <button id="sendBtn"><img src="https://cdn-icons-png.flaticon.com/512/786/786205.png"></button>
+    </div>
+  </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-const firebaseConfig={apiKey:"AIzaSyDAN7mFP_-0MqmRXwN212IMcCbqkuQ-SEQ",authDomain:"urlix-d6ae1.firebaseapp.com",projectId:"urlix-d6ae1",storageBucket:"urlix-d6ae1.firebasestorage.app",messagingSenderId:"247920035867",appId:"1:247920035867:web:4a8936ec3dd963af2450be"};
-const app=initializeApp(firebaseConfig);const auth=getAuth(app);
-
-const loginPage=document.getElementById("loginPage");
-const chatPage=document.getElementById("chatPage");
-const loginBtn=document.getElementById("loginBtn");
-const signupBtn=document.getElementById("signupBtn");
-const toggleMode=document.getElementById("toggleMode");
-let signupMode=false;
-toggleMode.onclick=()=>{signupMode=!signupMode;
-  signupBtn.style.display=signupMode?"block":"none";
-  loginBtn.style.display=signupMode?"none":"block";
-  toggleMode.textContent=signupMode?"Have account? Login":"No account? Sign Up";
-};
-function switchToChat(){loginPage.classList.remove("active");chatPage.classList.add("active");loadHistory();}
-
-/* Splash delay */
-window.addEventListener("load",()=>{setTimeout(()=>{document.getElementById("splash").style.display="none";},2600);});
-
-loginBtn.onclick=async()=>{try{await signInWithEmailAndPassword(auth,email.value,password.value);localStorage.setItem("user",email.value);switchToChat();}
-catch(e){alert(e.message)}};
-signupBtn.onclick=async()=>{try{await createUserWithEmailAndPassword(auth,email.value,password.value);localStorage.setItem("user",email.value);switchToChat();}
-catch(e){alert(e.message)}};
-if(localStorage.getItem("user")){setTimeout(()=>switchToChat(),2600);}
-
-/* Gemini chat */
-const chatBox=document.getElementById("chatBox"),userInput=document.getElementById("userInput"),sendBtn=document.getElementById("sendBtn"),reaskBtn=document.getElementById("reaskBtn"),historyBox=document.getElementById("history");
+<script>
 const apiKey="AIzaSyD4nLeImTfLbnNhcFUIDHhwU2FC7gVkTyo";
-let history=JSON.parse(localStorage.getItem("askHistory")||"[]");
+const splash=document.getElementById('splash');
+const app=document.getElementById('app');
+const input=document.getElementById('userInput');
+const sendBtn=document.getElementById('sendBtn');
+const chatArea=document.getElementById('chatArea');
+const chatBox=document.getElementById('chatBox');
+const historyBox=document.getElementById('history');
+
+window.addEventListener('load',()=>{setTimeout(()=>{splash.style.display='none';app.style.display='flex';loadHistory();},3000);});
+
+function resetToAsk(){
+  chatArea.style.display='none';
+  document.getElementById('askSection').style.display='flex';
+  loadHistory();
+}
 
 function loadHistory(){
-  historyBox.innerHTML="";
-  history.slice(-10).reverse().forEach(q=>{
-    const d=document.createElement("div");d.className="histItem";d.textContent=q;
-    d.onclick=()=>{userInput.value=q;sendMsg();};
-    historyBox.appendChild(d);
-  });
+  historyBox.innerHTML='';
+  const history=JSON.parse(localStorage.getItem('urilex_history')||'[]');
+  if(history.length===0){
+    const p=document.createElement('p');
+    p.textContent="Your previous asks will appear here.";
+    p.style.color="#888";
+    p.style.textAlign="center";
+    historyBox.appendChild(p);
+  }else{
+    history.forEach(q=>{
+      const div=document.createElement('div');
+      div.classList.add('historyItem');
+      div.textContent=q;
+      div.onclick=()=>{input.value=q;sendMsg();};
+      historyBox.appendChild(div);
+    });
+  }
 }
 
 async function sendMsg(){
-  const text=userInput.value.trim();if(!text)return;
-  const userDiv=document.createElement("div");userDiv.className="msg user";userDiv.textContent=text;
-  chatBox.appendChild(userDiv);
-  const aiDiv=document.createElement("div");aiDiv.className="msg ai typing";aiDiv.textContent="Uri-Lex is thinking…";
-  chatBox.appendChild(aiDiv);
-  chatBox.scrollTop=chatBox.scrollHeight;
-  userInput.value="";sendBtn.disabled=true;
-  history.push(text);localStorage.setItem("askHistory",JSON.stringify(history));loadHistory();
+  const text=input.value.trim();
+  if(!text)return;
+  saveHistory(text);
+  document.getElementById('askSection').style.display='none';
+  historyBox.innerHTML='';
+  chatArea.style.display='flex';
+  chatBox.innerHTML='';
 
-  const prompt=`Act as Google. Never use ** or markdown, just clean readable text. Extract useful links clearly. User: ${text}`;
+  const userDiv=document.createElement('div');
+  userDiv.className='msg user';
+  userDiv.textContent=text;
+  chatBox.appendChild(userDiv);
+
+  const aiDiv=document.createElement('div');
+  aiDiv.className='msg ai';
+  aiDiv.textContent='Uri-Lex is thinking...';
+  chatBox.appendChild(aiDiv);
+
+  const prompt=`Hey Gemini, act as Google, not as AI. Reply informatively like Google results, with helpful links in plain text (no ** or *). The user's message: "${text}"`;
   try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
-      method:"POST",headers:{"Content-Type":"application/json"},
+    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+apiKey,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
       body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
     });
-    const data=await r.json();
-    let reply=data.candidates?.[0]?.content?.parts?.[0]?.text||"No reply.";
-    reply=reply.replace(/\*\*/g,"").replace(/\*/g,"").replace(/\n/g,"<br>")
-               .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
-    aiDiv.classList.remove("typing");aiDiv.innerHTML=reply;
-    reaskBtn.style.display="block";
-  }catch{aiDiv.classList.remove("typing");aiDiv.textContent="Connection error";}
-  sendBtn.disabled=false;
-  chatBox.scrollTop=chatBox.scrollHeight;
+    const data=await res.json();
+    let reply=data.candidates?.[0]?.content?.parts?.[0]?.text || "Uri-Lex couldn’t fetch results right now.";
+    reply=reply.replace(/\*\*/g,"").replace(/\*/g,"");
+    reply=reply.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
+    aiDiv.innerHTML=reply;
+    chatBox.scrollTop=chatBox.scrollHeight;
+  }catch(e){
+    aiDiv.textContent="Uri-Lex ran into a technical issue. Please try again.";
+  }
+  input.value='';
+}
+
+function saveHistory(q){
+  let h=JSON.parse(localStorage.getItem('urilex_history')||'[]');
+  h.unshift(q);
+  if(h.length>10)h=h.slice(0,10);
+  localStorage.setItem('urilex_history',JSON.stringify(h));
 }
 
 sendBtn.onclick=sendMsg;
-userInput.addEventListener("keypress",e=>{if(e.key==="Enter")sendMsg();});
-reaskBtn.onclick=()=>{chatBox.innerHTML="";reaskBtn.style.display="none";}
+input.addEventListener('keypress',e=>{if(e.key==='Enter')sendMsg();});
 </script>
 </body>
 </html>
