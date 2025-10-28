@@ -1,223 +1,405 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Uri-Lex</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;600;700&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    font-family:'Poppins',sans-serif;
-    background:linear-gradient(135deg,#000,#111);
-    color:white;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
+  :root{
+    --bg:#000;
+    --card:#0f0f10;
+    --muted:#9aa4b2;
+    --accent:#1e88ff;
+    --link:#4aa3ff;
   }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg),#080808);font-family:'Open Sans',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+  /* Splash (always shows on open) */
   #splash{
-    position:fixed;inset:0;
-    display:flex;justify-content:center;align-items:center;
-    font-size:3rem;font-weight:700;
-    background:black;z-index:1000;
-    animation:fadeSplash 3s ease forwards;
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;gap:12px;
+    z-index:9999;background:linear-gradient(180deg,#000,#000);animation:splashAnim 2800ms ease forwards;
   }
-  #splash span.u{
-    background:white;color:black;padding:10px 14px;border-radius:10px;margin-right:8px;
+  #splash .u{background:#fff;color:#000;padding:12px 16px;border-radius:12px;font-weight:700;font-size:36px}
+  #splash .rest{font-weight:700;font-size:34px;letter-spacing:1px}
+  @keyframes splashAnim{0%{opacity:1}90%{opacity:1}100%{opacity:0;visibility:hidden}}
+
+  /* App root */
+  #root{position:relative;height:100vh;width:100vw;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;overflow:hidden}
+
+  /* Header */
+  header{
+    height:56px;display:flex;align-items:center;justify-content:center;
+    border-bottom:1px solid rgba(255,255,255,0.03);background:transparent;z-index:10;
+    position:fixed;left:0;right:0;top:0;
+    backdrop-filter: blur(6px);
   }
-  @keyframes fadeSplash{
-    0%{opacity:1;}90%{opacity:1;}100%{opacity:0;visibility:hidden;}
+  header h1{margin:0;font-size:16px;font-weight:700;color:#fff}
+
+  /* Main view container */
+  #main{
+    padding:72px 16px 88px; /* header + input space */
+    flex:1;overflow:auto;
+    -webkit-overflow-scrolling:touch;
   }
-  #app{
-    display:none;
-    flex-direction:column;
-    width:100%;
-    height:100vh;
-    padding:20px;
+
+  /* History */
+  #history{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .historyItem{
+    background:rgba(255,255,255,0.03);padding:10px 12px;border-radius:10px;font-size:14px;color:#fff;cursor:pointer;
+    border:1px solid rgba(255,255,255,0.02);
   }
-  #header{
-    font-weight:700;
-    font-size:1.2rem;
-    text-align:center;
-    margin-bottom:20px;
+  .historyItem small{color:var(--muted);display:block;margin-top:6px;font-size:12px}
+
+  /* Chat/answers list */
+  #answers{display:flex;flex-direction:column;gap:12px}
+  .card{background:rgba(255,255,255,0.03);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+  .userQ{font-weight:700;color:#fff;margin-bottom:8px}
+  .aiA{color:#e6eefb;line-height:1.45;white-space:pre-wrap}
+  .links{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+  .links a{color:var(--link);text-decoration:underline;font-weight:700;word-break:break-all}
+
+  /* Full-screen answer view (overlay) */
+  #answerView{
+    position:fixed;inset:56px 0 72px 0;background:var(--bg);z-index:30;display:none;padding:20px;overflow:auto;
+    -webkit-overflow-scrolling:touch;
   }
-  #askSection{
-    margin-top:auto;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+  #answerView .title{font-size:13px;color:var(--muted);margin-bottom:8px}
+  #answerView .question{font-size:20px;font-weight:700;margin-bottom:12px}
+  #answerView .answerCard{background:rgba(255,255,255,0.03);padding:14px;border-radius:12px}
+  #answerView .answerText{color:#e6eefb;white-space:pre-wrap;line-height:1.5}
+  #answerView .linkList{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  #answerView #reAsk{margin-top:18px;padding:12px;border-radius:10px;border:2px solid #fff;background:transparent;color:#fff;font-weight:700;width:100%}
+
+  /* Input bar fixed at bottom */
+  #inputBar{
+    position:fixed;left:0;right:0;bottom:0;padding:12px;background:#060606;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(255,255,255,0.03);
   }
-  #askBox{
-    position:relative;
-    width:100%;
-    max-width:600px;
-  }
+  #inputWrap{flex:1;position:relative}
   #userInput{
-    width:100%;
-    background:#111;
-    color:white;
-    border:none;
-    border-radius:40px;
-    padding:14px 50px 14px 18px;
-    font-size:1rem;
-    outline:none;
+    width:100%;padding:14px 52px 14px 14px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);
+    color:#fff;font-size:15px;outline:none;
   }
   #sendBtn{
-    position:absolute;
-    right:10px;
-    top:50%;
-    transform:translateY(-50%);
-    background:#0078ff;
-    border:none;
-    border-radius:50%;
-    width:40px;
-    height:40px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    cursor:pointer;
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:999px;border:none;background:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:0 6px 18px rgba(30,136,255,0.16)
   }
-  #sendBtn img{width:20px;height:20px;filter:invert(1);}
-  #chatArea{
-    display:none;
-    flex-direction:column;
-    height:100%;
-  }
-  #chatBox{
-    flex:1;
-    overflow-y:auto;
-    padding-bottom:10px;
-  }
-  .msg{margin:10px 0;padding:12px;border-radius:12px;line-height:1.5;}
-  .user{background:#1a1a1a;align-self:flex-end;}
-  .ai{background:#0b0b0b;border-left:3px solid #0078ff;}
-  a{color:#4aa3ff;font-weight:bold;text-decoration:underline;}
-  #reAskBtn{
-    background:#111;border:2px solid #0078ff;color:#fff;
-    padding:10px 16px;border-radius:30px;font-weight:600;
-    width:max-content;margin:15px auto;cursor:pointer;
-  }
-  #history{
-    display:flex;flex-direction:column;gap:10px;
-    max-height:50vh;overflow-y:auto;width:100%;
-  }
-  .historyItem{
-    background:#111;padding:10px 14px;border-radius:12px;
-    font-size:0.95rem;cursor:pointer;transition:0.3s;
-  }
-  .historyItem:hover{background:#1a1a1a;}
+  #sendBtn svg{width:18px;height:18px;fill:#fff}
+  #sendBtn[disabled]{opacity:.45;pointer-events:none}
+
+  /* typing dots */
+  .dots{display:inline-flex;gap:4px;align-items:center}
+  .dot{width:6px;height:6px;background:#aaa;border-radius:50%;opacity:.25;animation:blink 1s infinite}
+  .dot:nth-child(2){animation-delay:.15s}
+  .dot:nth-child(3){animation-delay:.3s}
+  @keyframes blink{0%{opacity:.25}50%{opacity:1}100%{opacity:.25}}
+
+  /* popup */
+  #popup{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;background:rgba(255,255,255,0.06);padding:12px 18px;border-radius:12px;color:#fff;display:none;z-index:100}
+  @media (min-width:640px){#main{max-width:680px;margin:0 auto}}
 </style>
 </head>
 <body>
-
-<div id="splash"><span class="u">U</span><span>ri-Lex</span></div>
-
-<div id="app">
-  <div id="header">Ask, Search, Anything — Your Uri-Lex</div>
-
-  <div id="history"></div>
-
-  <div id="chatArea">
-    <div id="chatBox"></div>
-    <div id="reAskBtn" onclick="resetToAsk()">Re-Ask</div>
+  <div id="splash">
+    <div class="u">U</div><div class="rest">ri-Lex</div>
   </div>
 
-  <div id="askSection">
-    <div id="askBox">
-      <input type="text" id="userInput" placeholder="Ask something..." />
-      <button id="sendBtn"><img src="https://cdn-icons-png.flaticon.com/512/786/786205.png"></button>
+  <div id="root">
+    <header><h1>Ask, Search, Anything — Your Uri-Lex</h1></header>
+
+    <!-- Main scroll area: history + answers preview -->
+    <main id="main">
+      <section id="history" aria-label="Ask history"></section>
+
+      <section id="answers" aria-label="Answers preview"></section>
+    </main>
+
+    <!-- full screen answer view (replaces main when open) -->
+    <div id="answerView" role="dialog" aria-hidden="true">
+      <div class="title">YOUR QUESTION</div>
+      <div id="avQuestion" class="question"></div>
+      <div class="answerCard">
+        <div id="avAnswer" class="answerText"></div>
+        <div id="avLinks" class="linkList"></div>
+      </div>
+      <button id="reAsk">Re-Ask</button>
     </div>
+
+    <!-- bottom input -->
+    <div id="inputBar" role="region" aria-label="Ask input">
+      <div id="inputWrap">
+        <input id="userInput" placeholder="Type your question..." autocomplete="off" />
+        <button id="sendBtn" aria-label="Send" title="Send" disabled>
+          <!-- paper-plane svg -->
+          <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
   </div>
-</div>
 
-<script>
-const apiKey="AIzaSyD4nLeImTfLbnNhcFUIDHhwU2FC7gVkTyo";
-const splash=document.getElementById('splash');
-const app=document.getElementById('app');
-const input=document.getElementById('userInput');
-const sendBtn=document.getElementById('sendBtn');
-const chatArea=document.getElementById('chatArea');
-const chatBox=document.getElementById('chatBox');
-const historyBox=document.getElementById('history');
+  <div id="popup" role="status"></div>
 
-window.addEventListener('load',()=>{setTimeout(()=>{splash.style.display='none';app.style.display='flex';loadHistory();},3000);});
+<script type="module">
+  // Firebase imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-function resetToAsk(){
-  chatArea.style.display='none';
-  document.getElementById('askSection').style.display='flex';
-  loadHistory();
-}
+  // CONFIG
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDAN7mFP_-0MqmRXwN212IMcCbqkuQ-SEQ",
+    authDomain: "urlix-d6ae1.firebaseapp.com",
+    projectId: "urlix-d6ae1",
+    storageBucket: "urlix-d6ae1.firebasestorage.app",
+    messagingSenderId: "247920035867",
+    appId: "1:247920035867:web:4a8936ec3dd963af2450be"
+  };
+  const GEMINI_API_KEY = "AIzaSyD4nLeImTfLbnNhcFUIDHhwU2FC7gVkTyo";
+  const GEMINI_MODEL = "gemini-2.5-flash"; // preferred
 
-function loadHistory(){
-  historyBox.innerHTML='';
-  const history=JSON.parse(localStorage.getItem('urilex_history')||'[]');
-  if(history.length===0){
-    const p=document.createElement('p');
-    p.textContent="Your previous asks will appear here.";
-    p.style.color="#888";
-    p.style.textAlign="center";
-    historyBox.appendChild(p);
-  }else{
-    history.forEach(q=>{
-      const div=document.createElement('div');
-      div.classList.add('historyItem');
-      div.textContent=q;
-      div.onclick=()=>{input.value=q;sendMsg();};
-      historyBox.appendChild(div);
-    });
+  // init firebase
+  const app = initializeApp(FIREBASE_CONFIG);
+  const auth = getAuth(app);
+
+  // UI refs
+  const splash = document.getElementById('splash');
+  const main = document.getElementById('main');
+  const historyEl = document.getElementById('history');
+  const answersEl = document.getElementById('answers');
+  const input = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const popup = document.getElementById('popup');
+  const answerView = document.getElementById('answerView');
+  const avQuestion = document.getElementById('avQuestion');
+  const avAnswer = document.getElementById('avAnswer');
+  const avLinks = document.getElementById('avLinks');
+  const reAskBtn = document.getElementById('reAsk');
+
+  // small helpers
+  function showPopup(msg, ms = 2800){
+    popup.textContent = msg;
+    popup.style.display = 'block';
+    setTimeout(()=> popup.style.display='none', ms);
   }
-}
+  function safeText(s){ return String(s || '').replace(/[<>]/g,''); }
 
-async function sendMsg(){
-  const text=input.value.trim();
-  if(!text)return;
-  saveHistory(text);
-  document.getElementById('askSection').style.display='none';
-  historyBox.innerHTML='';
-  chatArea.style.display='flex';
-  chatBox.innerHTML='';
+  // show splash then init views
+  window.addEventListener('load', () => {
+    // keep splash visible for same duration as CSS animation (approx), then init
+    setTimeout(() => {
+      splash.style.display = 'none';
+      initApp();
+    }, 3000);
+  });
 
-  const userDiv=document.createElement('div');
-  userDiv.className='msg user';
-  userDiv.textContent=text;
-  chatBox.appendChild(userDiv);
-
-  const aiDiv=document.createElement('div');
-  aiDiv.className='msg ai';
-  aiDiv.textContent='Uri-Lex is thinking...';
-  chatBox.appendChild(aiDiv);
-
-  const prompt=`Hey Gemini, act as Google, not as AI. Reply informatively like Google results, with helpful links in plain text (no ** or *). The user's message: "${text}"`;
-  try{
-    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+apiKey,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
-    });
-    const data=await res.json();
-    let reply=data.candidates?.[0]?.content?.parts?.[0]?.text || "Uri-Lex couldn’t fetch results right now.";
-    reply=reply.replace(/\*\*/g,"").replace(/\*/g,"");
-    reply=reply.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
-    aiDiv.innerHTML=reply;
-    chatBox.scrollTop=chatBox.scrollHeight;
-  }catch(e){
-    aiDiv.textContent="Uri-Lex ran into a technical issue. Please try again.";
+  // MANAGE HISTORY (localStorage)
+  function getHistory(){ try { return JSON.parse(localStorage.getItem('urilex_history') || '[]'); } catch(e){ return []; } }
+  function saveHistory(arr){ try { localStorage.setItem('urilex_history', JSON.stringify(arr)); } catch(e){} }
+  function addToHistory(q){
+    const h = getHistory();
+    h.unshift(q);
+    if(h.length > 20) h.length = 20;
+    saveHistory(h);
+    renderHistory();
   }
-  input.value='';
-}
+  function renderHistory(){
+    const h = getHistory();
+    historyEl.innerHTML = '';
+    if(h.length === 0){
+      const hint = document.createElement('div');
+      hint.style.color = '#8b98a8';
+      hint.style.textAlign = 'center';
+      hint.style.padding = '20px 0';
+      hint.textContent = 'Your previous searches will appear here.';
+      historyEl.appendChild(hint);
+      return;
+    }
+    for(const q of h){
+      const d = document.createElement('div');
+      d.className = 'historyItem';
+      d.textContent = q;
+      d.onclick = () => { input.value = q; updateSendState(); /* autofill and send */ sendMessage(); };
+      historyEl.appendChild(d);
+    }
+  }
 
-function saveHistory(q){
-  let h=JSON.parse(localStorage.getItem('urilex_history')||'[]');
-  h.unshift(q);
-  if(h.length>10)h=h.slice(0,10);
-  localStorage.setItem('urilex_history',JSON.stringify(h));
-}
+  // show small preview answers list (not required but helpful)
+  function addAnswerPreview(question, shortAnswer, linksHtml){
+    const c = document.createElement('div');
+    c.className = 'card';
+    const q = document.createElement('div'); q.className = 'userQ'; q.textContent = question;
+    const a = document.createElement('div'); a.className = 'aiA'; a.innerHTML = shortAnswer;
+    c.appendChild(q);
+    c.appendChild(a);
+    if(linksHtml){
+      const linksWrap = document.createElement('div'); linksWrap.className = 'links';
+      linksWrap.innerHTML = linksHtml;
+      c.appendChild(linksWrap);
+    }
+    answersEl.prepend(c);
+  }
 
-sendBtn.onclick=sendMsg;
-input.addEventListener('keypress',e=>{if(e.key==='Enter')sendMsg();});
+  // helper: extract links (returns array of link strings)
+  function extractLinks(text){
+    if(!text) return [];
+    const regex = /(https?:\/\/[^\s,;()"\]]+|www\.[^\s,;()"\]]+|\b[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\b(\/[^\s,;()"\]]*)?)/g;
+    const matches = text.match(regex);
+    if(!matches) return [];
+    // clean punctuation at end
+    return matches.map(m => m.replace(/[.,;:!?]+$/,''));
+  }
+
+  // format links into html (blue, underlined)
+  function formatLinksHtml(list){
+    if(!list || !list.length) return '';
+    return list.map(l => {
+      let href = l;
+      if(!/^https?:\/\//i.test(l)) href = (l.startsWith('www.') ? 'https://' + l : 'https://' + l);
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${l}</a>`;
+    }).join('<br>');
+  }
+
+  // Toggle send enabled
+  function updateSendState(){
+    const has = input.value.trim().length > 0;
+    sendBtn.disabled = !has;
+  }
+  input.addEventListener('input', () => updateSendState());
+  updateSendState();
+
+  // ANSWER VIEW controls
+  function openAnswerView(question, answerText){
+    avQuestion.textContent = question;
+    // clean forbidden markdown characters
+    let cleaned = (answerText || '').replace(/\*\*/g,'').replace(/\*/g,'').trim();
+    avAnswer.textContent = cleaned;
+    // extract links and add below
+    const links = extractLinks(cleaned);
+    avLinks.innerHTML = '';
+    if(links.length){
+      const html = formatLinksHtml(links);
+      avLinks.innerHTML = html;
+    }
+    // show
+    answerView.style.display = 'block';
+    answerView.scrollTop = 0;
+    answerView.setAttribute('aria-hidden','false');
+  }
+  // Close to main
+  reAskBtn.addEventListener('click', ()=>{
+    answerView.style.display = 'none';
+    answerView.setAttribute('aria-hidden','true');
+    input.focus();
+  });
+
+  // send message -> call Gemini (fetch)
+  let inFlight = false;
+  async function sendMessage(){
+    if(inFlight) return;
+    const text = input.value.trim();
+    if(!text) return;
+    inFlight = true;
+    updateSendState();
+    // save to history
+    addToHistory(text);
+    // show immediate answer view with typing animation
+    openAnswerView(text, ''); // will update after response
+    avAnswer.innerHTML = '<div class="typing"><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> Uri-Lex is thinking...</div>';
+    avLinks.innerHTML = '';
+
+    // build prompt to Gemini
+    const prompt = `Hey Gemini Act As Google Like You Are Google And You Are Replying But NOT TELLING this is AI. Answer clearly without using any markdown symbols like ** or *. Use only spaces and line breaks. If you mention or provide a reference or website, include its full URL. App Name: Uri-Lex. User Request: "${text}"`;
+
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        }),
+        // no-cache recommended for dynamic
+      });
+
+      if(!res.ok){
+        const txt = await res.text();
+        throw new Error(txt || 'Network error');
+      }
+
+      const data = await res.json();
+      // try to extract text confidently
+      let reply = '';
+      if(Array.isArray(data?.candidates) && data.candidates.length){
+        // many shapes - try the usual
+        const c0 = data.candidates[0];
+        // path: content -> parts -> [0] -> text
+        if(c0?.content && Array.isArray(c0.content)){
+          for(const partBlock of c0.content){
+            if(Array.isArray(partBlock.parts)){
+              for(const p of partBlock.parts){
+                if(p.text) reply += p.text;
+              }
+            }
+          }
+        } else if(c0?.output?.[0]?.content?.[0]?.text){
+          reply = c0.output[0].content[0].text;
+        } else if(typeof c0.text === 'string') {
+          reply = c0.text;
+        }
+      }
+      // fallback shapes
+      if(!reply && data?.text) reply = data.text;
+      if(!reply && data?.output){
+        try { reply = JSON.stringify(data.output); } catch(e){}
+      }
+      if(!reply) reply = 'Uri-Lex could not retrieve a proper answer right now.';
+
+      // sanitize and display
+      reply = String(reply).replace(/\*\*/g,'').replace(/\*/g,'');
+      // replace newlines with <br> for display
+      avAnswer.innerHTML = reply.replace(/\n/g,'<br>');
+      const links = extractLinks(reply);
+      if(links.length){
+        avLinks.innerHTML = formatLinksHtml(links);
+      } else {
+        avLinks.innerHTML = '';
+      }
+
+      // add preview card to main answers area
+      addAnswerPreview(text, (reply.length > 260 ? reply.slice(0,260)+'...' : reply), links.length ? formatLinksHtml(links) : '');
+    } catch(err){
+      // always show Uri-Lex branded error text
+      avAnswer.textContent = 'Uri-Lex ran into a technical issue. Please try again.';
+      avLinks.innerHTML = '';
+      showPopup('Uri-Lex system error occurred.');
+      console.error('Uri-Lex fetch error:', err);
+    } finally {
+      inFlight = false;
+      input.value = '';
+      updateSendState();
+    }
+  }
+
+  // send button
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', (e)=> { if(e.key === 'Enter') sendMessage(); });
+
+  // small init: render history and answers preview from localStorage
+  function initApp(){
+    renderHistory();
+    // restore preview answers (if you want to persist previews you can)
+    // show main area (already visible)
+    // focus input
+    input.focus();
+  }
+
+  // optional: automatically show splash even when logged in - already handled at load
+  // expose a logout (developer)
+  window.urilex = { addToHistory, getHistory, sendMessage, openAnswerView, showPopup };
+
+  // keyboard safe: when keyboard opens on mobile, keep input in view
+  window.addEventListener('resize', ()=> {
+    setTimeout(()=> { input.scrollIntoView({behavior:'smooth', block:'center'}); }, 250);
+  });
 </script>
 </body>
 </html>
